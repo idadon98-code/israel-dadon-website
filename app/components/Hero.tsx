@@ -56,10 +56,10 @@ export default function Hero({
   headline = 'רגעים שנשארים לנצח, דרך העדשה שלי',
   subheadline = 'צילום אירועים, בר ובת מצווה והדפסת מגנטים בגישה אישית וברמת גימור פרימיום',
   primaryCta = { label: 'שלחו הודעה בוואטסאפ', href: 'https://wa.me/972509978499' },
-  secondaryCta = { label: 'צפו בעבודות', href: '#portfolio' },
+  secondaryCta = { label: 'צפו בעבודות', href: '#gallery' },
   videoSrc,
   posterSrc,
-  scrollTargetId = 'portfolio',
+  scrollTargetId = 'gallery',
 }: HeroProps) {
   const [isLoaded, setIsLoaded] = useState(false);
   const hasMedia = Boolean(videoSrc || posterSrc);
@@ -76,6 +76,7 @@ export default function Hero({
 
   return (
     <section
+      id="home"
       dir="rtl"
       aria-label="פתיחה — Israel Dadon Photography"
       className={`${heebo.variable} relative flex h-[100svh] min-h-[560px] w-full items-end overflow-hidden ${

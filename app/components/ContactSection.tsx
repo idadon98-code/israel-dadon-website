@@ -61,7 +61,7 @@ export default function ContactSection({
   subtitle = 'ספרו לי על האירוע שלכם ואחזור אליכם עם כל הפרטים.',
   submitLabel = 'שליחת פרטים',
   whatsappLabel = 'שלחו הודעה בוואטסאפ',
-  whatsappHref = 'https://wa.me/972500000000',
+  whatsappHref = 'https://wa.me/972509978499',
 }: ContactSectionProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 

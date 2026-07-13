@@ -23,6 +23,10 @@
 
   /* On-gold text (buttons use white text per brand spec) */
   --color-text-on-gold: #ffffff;
+
+  /* Sticky header height — referenced by Header.tsx for its fixed height
+     and the mobile menu's top offset. */
+  --header-height: 80px;
 }
 
 body {

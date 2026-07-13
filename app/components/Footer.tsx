@@ -28,6 +28,7 @@ export interface FooterProps {
 const defaultNavItems: FooterNavItem[] = [
   { label: 'בית', href: '#home' },
   { label: 'גלריה', href: '#gallery' },
+  { label: 'מגנטים', href: '#magnets' },
   { label: 'אודות', href: '#about' },
   { label: 'למה לבחור בי', href: '#services' },
   { label: 'איך זה עובד', href: '#process' },

@@ -2,6 +2,7 @@ import Header from "./components/Header";
 import Hero from "./components/Hero";
 import TrustBar from "./components/TrustBar";
 import Portfolio from "./components/Portfolio";
+import Magnets from "./components/Magnets";
 import About from "./components/About";
 import WhyChooseMe from "./components/WhyChooseMe";
 import HowItWorks from "./components/HowItWorks";
@@ -15,6 +16,7 @@ export default function Home() {
       <Hero />
       <TrustBar />
       <Portfolio />
+      <Magnets />
       <About />
       <WhyChooseMe />
       <HowItWorks />

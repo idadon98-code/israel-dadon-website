@@ -137,7 +137,7 @@ export default function TrustBar({ items = defaultItems }: TrustBarProps) {
             lg:grid-cols-4 lg:gap-y-0
           "
         >
-          {items.map((item, index) => (
+          {items.map((item) => (
             <li
               key={item.label}
               className="

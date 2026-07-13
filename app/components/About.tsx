@@ -48,6 +48,7 @@ export default function About({
 }: AboutProps) {
   return (
     <section
+      id="about"
       dir="rtl"
       aria-label="נעים להכיר — קצת עליי"
       className={`${heebo.variable} w-full bg-[var(--color-background)] py-20 font-[family-name:var(--font-heebo)] sm:py-28`}
