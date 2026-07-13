@@ -1,0 +1,31 @@
+@import "tailwindcss";
+
+/**
+ * Brand color system ג€” Israel Dadon Photography.
+ * All colors used across components are defined here as CSS variables so
+ * the entire site's palette can be managed and updated from one place.
+ */
+:root {
+  /* Primary brand accent (buttons, active/hover states, focus rings) */
+  --color-primary-gold: #cbb78c;
+  --color-primary-gold-hover: #b79d6b;
+
+  /* Surfaces */
+  --color-background: #faf8f4;
+  --color-card: #ffffff;
+
+  /* Text */
+  --color-text-primary: #1e1e1e;
+  --color-text-secondary: #666666;
+
+  /* Structure */
+  --color-border: #e7dfd1;
+
+  /* On-gold text (buttons use white text per brand spec) */
+  --color-text-on-gold: #ffffff;
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-text-primary);
+}
