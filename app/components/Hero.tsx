@@ -40,7 +40,7 @@ export interface HeroProps {
 }
 
 /**
- * Hero — full-bleed opening section.
+ * Hero — compact opening section.
  *
  * Colors: driven entirely by the CSS variables defined in globals.css.
  * The section defaults to the brand's warm ivory background
@@ -52,6 +52,11 @@ export interface HeroProps {
  * a photo, never as a standalone background color. If no media is
  * supplied, the section falls back to the plain background with dark
  * text and no overlay at all.
+ *
+ * Height: uses fixed, responsive `min-h` values rather than a full-
+ * viewport (100svh) height, with content vertically centered instead of
+ * bottom-pinned — keeps the opening band comfortably sized without
+ * pushing the next section far below the fold.
  */
 export default function Hero({
   headline = 'רגעים שנשארים לנצח, דרך העדשה שלי',
@@ -80,7 +85,7 @@ export default function Hero({
       id="home"
       dir="rtl"
       aria-label="פתיחה — Israel Dadon Photography"
-      className={`${heebo.variable} relative flex h-[100svh] min-h-[560px] w-full items-end overflow-hidden ${
+      className={`${heebo.variable} relative flex min-h-[420px] w-full items-center overflow-hidden sm:min-h-[480px] lg:min-h-[540px] ${
         hasMedia ? 'bg-[var(--color-text-primary)]' : 'bg-[var(--color-background)]'
       } font-[family-name:var(--font-heebo)]`}
     >
@@ -136,7 +141,7 @@ export default function Hero({
       )}
 
       {/* Content */}
-      <div className="relative z-10 mx-auto w-full max-w-[1280px] px-6 pb-20 sm:px-10 sm:pb-28 lg:px-16 lg:pb-32">
+      <div className="relative z-10 mx-auto w-full max-w-[1280px] px-6 py-16 sm:px-10 sm:py-20 lg:px-16 lg:py-24">
         <h1
           className={`max-w-3xl text-[38px] font-bold leading-[1.15] sm:text-[56px] lg:text-[80px] ${
             hasMedia ? 'text-[var(--color-card)]' : 'text-[var(--color-text-primary)]'

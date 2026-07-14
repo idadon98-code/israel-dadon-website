@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import Image from 'next/image';
 import { Heebo } from 'next/font/google';
 
 /**
@@ -21,10 +22,6 @@ export interface NavItem {
 }
 
 export interface HeaderProps {
-  /** Studio name shown as the top line of the logo */
-  logoName?: string;
-  /** Tagline shown under the studio name */
-  logoTagline?: string;
   /** Main navigation links */
   navItems?: NavItem[];
   /** Label for the WhatsApp CTA button */
@@ -60,10 +57,15 @@ const defaultNavItems: NavItem[] = [
  * Colors: unchanged — driven entirely by the CSS variables defined in
  * globals.css. Nav links use the full-opacity primary text color against
  * the solid white header so they read clearly at every size.
+ *
+ * Logo: /public/images/logo-header.png is a dedicated recolor of the
+ * brand mark — the source PNG's wordmark was pure white (fine on a dark
+ * surface, invisible on this white header), so that text was recolored to
+ * the site's existing charcoal (--color-text-primary) while the gold
+ * icon and full transparency were left untouched. Sits directly on the
+ * header with no background chip.
  */
 export default function Header({
-  logoName = 'ישראל דדון',
-  logoTagline = 'צילום אירועים',
   navItems = defaultNavItems,
   ctaLabel = 'קבלו הצעת מחיר',
   ctaHref = 'https://wa.me/972509978499',
@@ -131,18 +133,20 @@ export default function Header({
       }`}
     >
       <div className="mx-auto flex h-[var(--header-height)] max-w-[1280px] items-center justify-between px-6 sm:px-10 lg:px-16">
-        {/* Logo — centered as a block, not top-aligned */}
+        {/* Logo — sits directly on the header, no background chip */}
         <a
           href="#home"
-          className="flex shrink-0 flex-col justify-center leading-tight"
+          className="flex shrink-0 items-center"
           aria-label="ישראל דדון צילום אירועים — חזרה לעמוד הבית"
         >
-          <span className="text-xl font-bold text-[var(--color-text-primary)] sm:text-2xl">
-            {logoName}
-          </span>
-          <span className="mt-0.5 text-xs font-normal tracking-wide text-[var(--color-text-secondary)] sm:text-sm">
-            {logoTagline}
-          </span>
+          <Image
+            src="/images/logo-header.png"
+            alt="ישראל דדון — צילום אירועים"
+            width={4339}
+            height={1419}
+            priority
+            className="h-8 w-auto sm:h-10"
+          />
         </a>
 
         {/* Desktop navigation — visible from md (768px) up */}

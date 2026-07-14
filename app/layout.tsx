@@ -14,6 +14,10 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+// Static social-share image (logo on a black background) — replaces the
+// previous code-generated opengraph-image.tsx route.
+const socialImageUrl = `${siteConfig.url}/social-preview.png`;
+
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
   title: siteConfig.title,
@@ -44,11 +48,20 @@ export const metadata: Metadata = {
     siteName: siteConfig.name,
     locale: "he_IL",
     type: "website",
+    images: [
+      {
+        url: socialImageUrl,
+        width: 1200,
+        height: 630,
+        alt: siteConfig.businessName,
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: siteConfig.title,
     description: siteConfig.description,
+    images: [socialImageUrl],
   },
 };
 
