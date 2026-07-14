@@ -39,6 +39,15 @@ const defaultNavItems: NavItem[] = [
 ];
 
 /**
+ * Pre-filled WhatsApp message for the header's "קבלו הצעת מחיר" CTA —
+ * encoded via encodeURIComponent so Hebrew, line breaks, and the emoji
+ * all survive correctly inside the wa.me query string.
+ */
+const quoteRequestMessage =
+  'שלום ישראל, הגעתי דרך האתר ואשמח לקבל הצעת מחיר לצילום אירוע 📸\n\nסוג האירוע:\nתאריך האירוע:\nמיקום האירוע:';
+const defaultCtaHref = `https://wa.me/972509978499?text=${encodeURIComponent(quoteRequestMessage)}`;
+
+/**
  * Header — sticky top navigation for a premium photography studio site.
  *
  * Layout: fixed height of exactly var(--header-height) (80px, within the
@@ -68,7 +77,7 @@ const defaultNavItems: NavItem[] = [
 export default function Header({
   navItems = defaultNavItems,
   ctaLabel = 'קבלו הצעת מחיר',
-  ctaHref = 'https://wa.me/972509978499',
+  ctaHref = defaultCtaHref,
 }: HeaderProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
