@@ -1,0 +1,302 @@
+'use client';
+
+import { useEffect, useRef, useState } from 'react';
+import Image from 'next/image';
+
+/**
+ * IntroAnimation — a one-time, ~2.7s opening sequence shown over the
+ * whole site on load: black screen → thin gold camera silhouette draws
+ * on → a single horizontal light sweep passes through the lens → the
+ * camera crossfades into the existing brand logo → the whole overlay
+ * fades away to reveal the real page underneath.
+ *
+ * Implementation: pure CSS/SVG (no animation library, no video). All
+ * timing lives in the <style jsx> block below as a sequence of delayed
+ * keyframe animations sharing one timeline, so the whole choreography
+ * stays in sync without JS having to drive individual frames. JS only
+ * handles: locking page scroll while the intro is up, unmounting once
+ * the final fade-out animation ends, and the skip button/Escape key.
+ *
+ * The real page content underneath is rendered from the very first
+ * server response — this overlay only ever sits on top of it via fixed
+ * positioning, it never delays or hides that content from crawlers, so
+ * it has no effect on SEO. It also always unmounts (returns null), so
+ * it can never linger and block later clicks on the header/nav.
+ *
+ * Reduced motion: prefers-reduced-motion switches to a plain, short
+ * fade (no drawing, no sweep) entirely via the CSS media query below —
+ * the JSX itself doesn't change based on JS-detected motion preference.
+ */
+
+// Safety net only — the real timing lives in CSS. If `animationend`
+// somehow never fires, this guarantees the overlay can't block the
+// site forever.
+const SAFETY_UNMOUNT_MS = 3500;
+
+export default function IntroAnimation() {
+  const [isVisible, setIsVisible] = useState(true);
+  const [isSkipping, setIsSkipping] = useState(false);
+  const skipButtonRef = useRef<HTMLButtonElement>(null);
+
+  // Locks scroll via the <html> element rather than <body> — Header's own
+  // mobile-menu lock also toggles document.body.style.overflow, and since
+  // that effect runs on every mount too (isMenuOpen starts false), it would
+  // immediately clobber a body-based lock set here. Using documentElement
+  // keeps this fully independent of that.
+  useEffect(() => {
+    document.documentElement.style.overflow = 'hidden';
+    return () => {
+      document.documentElement.style.overflow = '';
+    };
+  }, []);
+
+  useEffect(() => {
+    skipButtonRef.current?.focus();
+  }, []);
+
+  useEffect(() => {
+    const safety = window.setTimeout(() => {
+      document.documentElement.style.overflow = '';
+      setIsVisible(false);
+    }, SAFETY_UNMOUNT_MS);
+    return () => window.clearTimeout(safety);
+  }, []);
+
+  useEffect(() => {
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') setIsSkipping(true);
+    }
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, []);
+
+  function handleOverlayAnimationEnd(event: React.AnimationEvent<HTMLDivElement>) {
+    if (event.target !== event.currentTarget) return;
+    document.documentElement.style.overflow = '';
+    setIsVisible(false);
+  }
+
+  if (!isVisible) return null;
+
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label="מסך פתיחה"
+      onAnimationEnd={handleOverlayAnimationEnd}
+      className={`intro-overlay fixed inset-0 z-[200] flex items-center justify-center bg-black ${
+        isSkipping ? 'intro-overlay--skipping' : ''
+      }`}
+    >
+      <div className="relative flex h-32 w-64 items-center justify-center sm:h-40 sm:w-80">
+        <div
+          className="intro-icon-wrap absolute inset-0 flex items-center justify-center overflow-hidden"
+          aria-hidden="true"
+        >
+          <svg viewBox="0 0 200 140" className="intro-camera h-20 w-auto sm:h-28" fill="none">
+            <rect
+              x="76"
+              y="16"
+              width="48"
+              height="22"
+              rx="6"
+              pathLength={1}
+              stroke="var(--color-primary-gold)"
+              strokeWidth="3"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <rect
+              x="18"
+              y="36"
+              width="164"
+              height="94"
+              rx="16"
+              pathLength={1}
+              stroke="var(--color-primary-gold)"
+              strokeWidth="3"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <circle
+              cx="100"
+              cy="88"
+              r="34"
+              pathLength={1}
+              stroke="var(--color-primary-gold)"
+              strokeWidth="3"
+              strokeLinecap="round"
+            />
+            <circle
+              cx="100"
+              cy="88"
+              r="19"
+              pathLength={1}
+              stroke="var(--color-primary-gold)"
+              strokeWidth="2"
+              strokeLinecap="round"
+            />
+          </svg>
+          <span className="intro-sweep" />
+        </div>
+
+        <Image
+          src="/images/logo-header.png"
+          alt="ישראל דדון — צילום אירועים"
+          width={4339}
+          height={1419}
+          className="intro-logo absolute h-12 w-auto sm:h-16"
+        />
+      </div>
+
+      <button
+        ref={skipButtonRef}
+        type="button"
+        onClick={() => setIsSkipping(true)}
+        className="intro-skip absolute bottom-6 left-1/2 -translate-x-1/2 text-xs font-medium tracking-wide text-white/60 transition-colors duration-200 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--color-primary-gold)] sm:bottom-10 sm:text-sm"
+      >
+        דלג
+      </button>
+
+      <style jsx>{`
+        @keyframes introDraw {
+          from {
+            stroke-dashoffset: 1;
+          }
+          to {
+            stroke-dashoffset: 0;
+          }
+        }
+        @keyframes introGlow {
+          0% {
+            filter: drop-shadow(0 0 0px rgba(203, 183, 140, 0));
+          }
+          60% {
+            filter: drop-shadow(0 0 9px rgba(203, 183, 140, 0.65));
+          }
+          100% {
+            filter: drop-shadow(0 0 4px rgba(203, 183, 140, 0.35));
+          }
+        }
+        @keyframes introSweep {
+          0% {
+            transform: translateY(-50%) translateX(-160%);
+            opacity: 0;
+          }
+          15% {
+            opacity: 1;
+          }
+          85% {
+            opacity: 1;
+          }
+          100% {
+            transform: translateY(-50%) translateX(160%);
+            opacity: 0;
+          }
+        }
+        @keyframes introCameraFadeOut {
+          to {
+            opacity: 0;
+          }
+        }
+        @keyframes introLogoFadeIn {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
+        @keyframes introSkipButtonFadeIn {
+          to {
+            opacity: 1;
+          }
+        }
+        @keyframes introOverlayFadeOut {
+          to {
+            opacity: 0;
+            visibility: hidden;
+          }
+        }
+        @keyframes introSkipFadeOut {
+          to {
+            opacity: 0;
+            visibility: hidden;
+          }
+        }
+
+        .intro-camera :global(rect),
+        .intro-camera :global(circle) {
+          stroke-dasharray: 1;
+          stroke-dashoffset: 1;
+          animation: introDraw 1000ms ease-out 150ms forwards;
+        }
+        .intro-camera {
+          animation:
+            introGlow 1000ms ease-out 150ms forwards,
+            introCameraFadeOut 450ms ease-in 1550ms forwards;
+        }
+        .intro-sweep {
+          position: absolute;
+          top: 63%;
+          left: 0;
+          width: 100%;
+          height: 10%;
+          transform: translateY(-50%) translateX(-160%);
+          background: linear-gradient(
+            90deg,
+            transparent,
+            var(--color-primary-gold) 45%,
+            #ffffff 50%,
+            var(--color-primary-gold) 55%,
+            transparent
+          );
+          filter: blur(3px);
+          opacity: 0;
+          animation: introSweep 450ms ease-in-out 1150ms forwards;
+        }
+        :global(.intro-logo) {
+          opacity: 0;
+          animation: introLogoFadeIn 450ms ease-out 1550ms forwards;
+        }
+        .intro-skip {
+          opacity: 0;
+          animation: introSkipButtonFadeIn 400ms ease-out 200ms forwards;
+        }
+        .intro-overlay {
+          animation: introOverlayFadeOut 500ms ease-out 2200ms forwards;
+        }
+        .intro-overlay.intro-overlay--skipping {
+          animation: introSkipFadeOut 300ms ease-out forwards;
+        }
+        .intro-overlay.intro-overlay--skipping .intro-camera,
+        .intro-overlay.intro-overlay--skipping .intro-sweep,
+        .intro-overlay.intro-overlay--skipping .intro-logo,
+        .intro-overlay.intro-overlay--skipping .intro-skip {
+          animation-play-state: paused;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .intro-camera,
+          .intro-sweep {
+            display: none;
+          }
+          :global(.intro-logo) {
+            opacity: 1;
+            animation: none;
+          }
+          .intro-skip {
+            opacity: 1;
+            animation: none;
+          }
+          .intro-overlay {
+            animation: introOverlayFadeOut 400ms ease-out 150ms forwards;
+          }
+          .intro-overlay.intro-overlay--skipping {
+            animation: introSkipFadeOut 250ms ease-out forwards;
+          }
+        }
+      `}</style>
+    </div>
+  );
+}
