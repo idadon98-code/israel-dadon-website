@@ -19,9 +19,14 @@ export interface PortfolioCategory {
   id: string;
   /** Category label shown on the card and in the lightbox */
   label: string;
-  /** Path to the category's cover image under public/images/ */
+  /** Path to the category's optimized cover thumbnail (WebP, max 800px
+   *  wide) — used for the card. */
   image: string;
-  /** Real pixel dimensions of `image`, used to size the Lightbox correctly */
+  /** Path to the category's optimized full-size cover (WebP, max 2200px
+   *  wide) — used by the single-cover Lightbox. */
+  imageFull: string;
+  /** Real pixel dimensions of `imageFull`, used to size the Lightbox
+   *  correctly. */
   width: number;
   height: number;
   /** Full set of real event photos (public/images/events/<id>/...), shown
@@ -32,46 +37,54 @@ export interface PortfolioCategory {
   galleryImages?: EventImage[];
 }
 
+// All event/cover photos below are pre-optimized WebP copies generated
+// from the original camera JPEGs (each 8-20MB at up to 8256x5504) via a
+// one-off sharp script: thumbnails capped at 800px wide (~75-80 quality)
+// for grids/cards, "full" copies capped at 2200px wide (~80-85 quality)
+// for full-screen viewing. Aspect ratio is preserved exactly, nothing is
+// cropped, and the untouched originals remain in their source folders
+// under public/images/events/<event>/ and public/images/<category>/ —
+// only these generated copies are what the site actually serves.
 const aliyahTorahImages: EventImage[] = [
-  { src: '/images/events/aliyah-torah/IMG_4583.JPG', width: 8256, height: 5504 },
-  { src: '/images/events/aliyah-torah/IMG_4585.JPG', width: 5504, height: 8256 },
-  { src: '/images/events/aliyah-torah/IMG_4586.JPG', width: 8256, height: 5504 },
-  { src: '/images/events/aliyah-torah/IMG_4589.JPG', width: 8256, height: 5504 },
-  { src: '/images/events/aliyah-torah/IMG_4601.JPG', width: 8256, height: 5504 },
-  { src: '/images/events/aliyah-torah/IMG_4614.JPG', width: 5504, height: 8256 },
-  { src: '/images/events/aliyah-torah/IMG_4616.JPG', width: 8256, height: 5504 },
-  { src: '/images/events/aliyah-torah/IMG_4617.JPG', width: 8256, height: 5504 },
-  { src: '/images/events/aliyah-torah/IMG_4625.JPG', width: 8256, height: 5504 },
-  { src: '/images/events/aliyah-torah/IMG_4626.JPG', width: 8256, height: 5504 },
-  { src: '/images/events/aliyah-torah/IMG_4629.JPG', width: 8256, height: 5504 },
-  { src: '/images/events/aliyah-torah/IMG_4633.JPG', width: 8256, height: 5504 },
+  { thumbSrc: '/images/optimized/events/aliyah-torah/IMG_4583-thumb.webp', fullSrc: '/images/optimized/events/aliyah-torah/IMG_4583-full.webp', width: 2200, height: 1467 },
+  { thumbSrc: '/images/optimized/events/aliyah-torah/IMG_4585-thumb.webp', fullSrc: '/images/optimized/events/aliyah-torah/IMG_4585-full.webp', width: 2200, height: 3300 },
+  { thumbSrc: '/images/optimized/events/aliyah-torah/IMG_4586-thumb.webp', fullSrc: '/images/optimized/events/aliyah-torah/IMG_4586-full.webp', width: 2200, height: 1467 },
+  { thumbSrc: '/images/optimized/events/aliyah-torah/IMG_4589-thumb.webp', fullSrc: '/images/optimized/events/aliyah-torah/IMG_4589-full.webp', width: 2200, height: 1467 },
+  { thumbSrc: '/images/optimized/events/aliyah-torah/IMG_4601-thumb.webp', fullSrc: '/images/optimized/events/aliyah-torah/IMG_4601-full.webp', width: 2200, height: 1467 },
+  { thumbSrc: '/images/optimized/events/aliyah-torah/IMG_4614-thumb.webp', fullSrc: '/images/optimized/events/aliyah-torah/IMG_4614-full.webp', width: 2200, height: 3300 },
+  { thumbSrc: '/images/optimized/events/aliyah-torah/IMG_4616-thumb.webp', fullSrc: '/images/optimized/events/aliyah-torah/IMG_4616-full.webp', width: 2200, height: 1467 },
+  { thumbSrc: '/images/optimized/events/aliyah-torah/IMG_4617-thumb.webp', fullSrc: '/images/optimized/events/aliyah-torah/IMG_4617-full.webp', width: 2200, height: 1467 },
+  { thumbSrc: '/images/optimized/events/aliyah-torah/IMG_4625-thumb.webp', fullSrc: '/images/optimized/events/aliyah-torah/IMG_4625-full.webp', width: 2200, height: 1467 },
+  { thumbSrc: '/images/optimized/events/aliyah-torah/IMG_4626-thumb.webp', fullSrc: '/images/optimized/events/aliyah-torah/IMG_4626-full.webp', width: 2200, height: 1467 },
+  { thumbSrc: '/images/optimized/events/aliyah-torah/IMG_4629-thumb.webp', fullSrc: '/images/optimized/events/aliyah-torah/IMG_4629-full.webp', width: 2200, height: 1467 },
+  { thumbSrc: '/images/optimized/events/aliyah-torah/IMG_4633-thumb.webp', fullSrc: '/images/optimized/events/aliyah-torah/IMG_4633-full.webp', width: 2200, height: 1467 },
 ];
 
 const batMitzvahImages: EventImage[] = [
-  { src: '/images/events/bat-mitzvah/DSC_2803.jpg', width: 5504, height: 8256 },
-  { src: '/images/events/bat-mitzvah/DSC_2813.jpg', width: 5504, height: 8256 },
-  { src: '/images/events/bat-mitzvah/DSC_2824.jpg', width: 5504, height: 8256 },
-  { src: '/images/events/bat-mitzvah/DSC_2948.jpg', width: 8256, height: 5504 },
-  { src: '/images/events/bat-mitzvah/DSC_2957.jpg', width: 8256, height: 5504 },
-  { src: '/images/events/bat-mitzvah/DSC_3063.jpg', width: 8256, height: 5504 },
-  { src: '/images/events/bat-mitzvah/DSC_3089.jpg', width: 5504, height: 8256 },
-  { src: '/images/events/bat-mitzvah/DSC_3376.jpg', width: 8256, height: 5504 },
+  { thumbSrc: '/images/optimized/events/bat-mitzvah/DSC_2803-thumb.webp', fullSrc: '/images/optimized/events/bat-mitzvah/DSC_2803-full.webp', width: 2200, height: 3300 },
+  { thumbSrc: '/images/optimized/events/bat-mitzvah/DSC_2813-thumb.webp', fullSrc: '/images/optimized/events/bat-mitzvah/DSC_2813-full.webp', width: 2200, height: 3300 },
+  { thumbSrc: '/images/optimized/events/bat-mitzvah/DSC_2824-thumb.webp', fullSrc: '/images/optimized/events/bat-mitzvah/DSC_2824-full.webp', width: 2200, height: 3300 },
+  { thumbSrc: '/images/optimized/events/bat-mitzvah/DSC_2948-thumb.webp', fullSrc: '/images/optimized/events/bat-mitzvah/DSC_2948-full.webp', width: 2200, height: 1467 },
+  { thumbSrc: '/images/optimized/events/bat-mitzvah/DSC_2957-thumb.webp', fullSrc: '/images/optimized/events/bat-mitzvah/DSC_2957-full.webp', width: 2200, height: 1467 },
+  { thumbSrc: '/images/optimized/events/bat-mitzvah/DSC_3063-thumb.webp', fullSrc: '/images/optimized/events/bat-mitzvah/DSC_3063-full.webp', width: 2200, height: 1467 },
+  { thumbSrc: '/images/optimized/events/bat-mitzvah/DSC_3089-thumb.webp', fullSrc: '/images/optimized/events/bat-mitzvah/DSC_3089-full.webp', width: 2200, height: 3300 },
+  { thumbSrc: '/images/optimized/events/bat-mitzvah/DSC_3376-thumb.webp', fullSrc: '/images/optimized/events/bat-mitzvah/DSC_3376-full.webp', width: 2200, height: 1467 },
 ];
 
 const seferTorahImages: EventImage[] = [
-  { src: '/images/events/sefer-torah/DSC_2716.JPG', width: 4128, height: 6192 },
-  { src: '/images/events/sefer-torah/DSC_2718.JPG', width: 6192, height: 4128 },
-  { src: '/images/events/sefer-torah/DSC_2773.JPG', width: 4128, height: 6192 },
-  { src: '/images/events/sefer-torah/DSC_2777-2.JPG', width: 4088, height: 6132 },
-  { src: '/images/events/sefer-torah/DSC_3027.JPG', width: 4128, height: 6192 },
-  { src: '/images/events/sefer-torah/DSC_3315.JPG', width: 6192, height: 4128 },
-  { src: '/images/events/sefer-torah/DSC_3878.JPG', width: 4128, height: 6192 },
-  { src: '/images/events/sefer-torah/DSC_4017.JPG', width: 6192, height: 4128 },
-  { src: '/images/events/sefer-torah/DSC_4197.JPG', width: 5845, height: 3897 },
-  { src: '/images/events/sefer-torah/DSC_4202.JPG', width: 6192, height: 4128 },
-  { src: '/images/events/sefer-torah/DSC_4206.JPG', width: 4128, height: 6192 },
-  { src: '/images/events/sefer-torah/DSC_4221.JPG', width: 6192, height: 4128 },
-  { src: '/images/events/sefer-torah/DSC_4264.JPG', width: 6192, height: 4128 },
+  { thumbSrc: '/images/optimized/events/sefer-torah/DSC_2716-thumb.webp', fullSrc: '/images/optimized/events/sefer-torah/DSC_2716-full.webp', width: 2200, height: 3300 },
+  { thumbSrc: '/images/optimized/events/sefer-torah/DSC_2718-thumb.webp', fullSrc: '/images/optimized/events/sefer-torah/DSC_2718-full.webp', width: 2200, height: 1467 },
+  { thumbSrc: '/images/optimized/events/sefer-torah/DSC_2773-thumb.webp', fullSrc: '/images/optimized/events/sefer-torah/DSC_2773-full.webp', width: 2200, height: 3300 },
+  { thumbSrc: '/images/optimized/events/sefer-torah/DSC_2777-2-thumb.webp', fullSrc: '/images/optimized/events/sefer-torah/DSC_2777-2-full.webp', width: 2200, height: 3300 },
+  { thumbSrc: '/images/optimized/events/sefer-torah/DSC_3027-thumb.webp', fullSrc: '/images/optimized/events/sefer-torah/DSC_3027-full.webp', width: 2200, height: 3300 },
+  { thumbSrc: '/images/optimized/events/sefer-torah/DSC_3315-thumb.webp', fullSrc: '/images/optimized/events/sefer-torah/DSC_3315-full.webp', width: 2200, height: 1467 },
+  { thumbSrc: '/images/optimized/events/sefer-torah/DSC_3878-thumb.webp', fullSrc: '/images/optimized/events/sefer-torah/DSC_3878-full.webp', width: 2200, height: 3300 },
+  { thumbSrc: '/images/optimized/events/sefer-torah/DSC_4017-thumb.webp', fullSrc: '/images/optimized/events/sefer-torah/DSC_4017-full.webp', width: 2200, height: 1467 },
+  { thumbSrc: '/images/optimized/events/sefer-torah/DSC_4197-thumb.webp', fullSrc: '/images/optimized/events/sefer-torah/DSC_4197-full.webp', width: 2200, height: 1467 },
+  { thumbSrc: '/images/optimized/events/sefer-torah/DSC_4202-thumb.webp', fullSrc: '/images/optimized/events/sefer-torah/DSC_4202-full.webp', width: 2200, height: 1467 },
+  { thumbSrc: '/images/optimized/events/sefer-torah/DSC_4206-thumb.webp', fullSrc: '/images/optimized/events/sefer-torah/DSC_4206-full.webp', width: 2200, height: 3300 },
+  { thumbSrc: '/images/optimized/events/sefer-torah/DSC_4221-thumb.webp', fullSrc: '/images/optimized/events/sefer-torah/DSC_4221-full.webp', width: 2200, height: 1467 },
+  { thumbSrc: '/images/optimized/events/sefer-torah/DSC_4264-thumb.webp', fullSrc: '/images/optimized/events/sefer-torah/DSC_4264-full.webp', width: 2200, height: 1467 },
 ];
 
 export interface PortfolioProps {
@@ -87,32 +100,36 @@ const defaultCategories: PortfolioCategory[] = [
   {
     id: 'aliyah-torah',
     label: 'עלייה לתורה',
-    image: '/images/aliyah-torah/aliyah.jpg',
-    width: 8256,
-    height: 5504,
+    image: '/images/optimized/covers/aliyah-torah-thumb.webp',
+    imageFull: '/images/optimized/covers/aliyah-torah-full.webp',
+    width: 2200,
+    height: 1467,
     galleryImages: aliyahTorahImages,
   },
   {
     id: 'bar-mitzvah',
     label: 'בר מצווה',
-    image: '/images/bar-mitzvah/bar.jpg',
-    width: 8256,
-    height: 5504,
+    image: '/images/optimized/covers/bar-mitzvah-thumb.webp',
+    imageFull: '/images/optimized/covers/bar-mitzvah-full.webp',
+    width: 2200,
+    height: 1467,
   },
   {
     id: 'bat-mitzvah',
     label: 'בת מצווה',
-    image: '/images/bat-mitzvah/cover.jpg',
-    width: 8256,
-    height: 5504,
+    image: '/images/optimized/covers/bat-mitzvah-thumb.webp',
+    imageFull: '/images/optimized/covers/bat-mitzvah-full.webp',
+    width: 2200,
+    height: 1467,
     galleryImages: batMitzvahImages,
   },
   {
     id: 'sefer-torah',
     label: 'הכנסת ספר תורה',
-    image: '/images/sefer-torah/cover.jpg',
-    width: 4088,
-    height: 6132,
+    image: '/images/optimized/covers/sefer-torah-thumb.webp',
+    imageFull: '/images/optimized/covers/sefer-torah-full.webp',
+    width: 2200,
+    height: 3300,
     galleryImages: seferTorahImages,
   },
 ];
@@ -385,13 +402,19 @@ function Lightbox({
       </button>
 
       <div
-        className={`flex max-h-full max-w-3xl flex-col items-center gap-4 transition-transform duration-200 ease-out ${
+        className={`relative flex max-h-full max-w-3xl flex-col items-center gap-4 transition-transform duration-200 ease-out ${
           isVisible ? 'scale-100' : 'scale-95'
         }`}
         onClick={(event) => event.stopPropagation()}
       >
+        {!isImageLoaded && (
+          <span
+            className="absolute h-8 w-8 animate-spin rounded-full border-2 border-[var(--color-card)]/20 border-t-[var(--color-primary-gold)]"
+            aria-hidden="true"
+          />
+        )}
         <Image
-          src={category.image}
+          src={category.imageFull}
           alt={`עבודות נבחרות — ${category.label}`}
           width={category.width}
           height={category.height}

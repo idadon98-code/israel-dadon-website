@@ -4,7 +4,11 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 
 export interface EventImage {
-  src: string;
+  /** Small optimized copy (WebP, max 800px wide) used for the grid thumbnail. */
+  thumbSrc: string;
+  /** Larger optimized copy (WebP, max 2200px wide) used for the full-screen viewer. */
+  fullSrc: string;
+  /** Real pixel dimensions of `fullSrc`, used to size the viewer correctly. */
   width: number;
   height: number;
 }
@@ -78,6 +82,17 @@ function GridIcon() {
   );
 }
 
+/** Small spinning ring, shown over the viewer while the full-size image
+ * is still loading so the screen is never blank mid-transition. */
+function LoadingSpinner() {
+  return (
+    <span
+      className="absolute h-8 w-8 animate-spin rounded-full border-2 border-[var(--color-card)]/20 border-t-[var(--color-primary-gold)]"
+      aria-hidden="true"
+    />
+  );
+}
+
 /**
  * EventGallery — public gallery for a single event's real photos.
  *
@@ -89,6 +104,15 @@ function GridIcon() {
  * (RTL-mapped: swipe left / ArrowLeft = next, swipe right / ArrowRight =
  * previous — matching the existing category Lightbox's convention) only
  * apply in the viewer.
+ *
+ * Images: the grid uses small pre-optimized WebP thumbnails (max 800px
+ * wide); the viewer uses larger pre-optimized WebP copies (max 2200px
+ * wide) instead of the multi-megabyte camera originals — see
+ * scripts/optimize note in Portfolio.tsx for how these were generated.
+ * Whenever the viewer is open, the next and previous images' full-size
+ * copies are silently preloaded in the background (a plain `Image()`
+ * object, not rendered), so paging feels instant instead of waiting on
+ * a fresh network request each time.
  *
  * Scroll lock uses `document.documentElement` rather than `document.body`
  * — the lesson from the intro animation's scroll-lock bug, where a
@@ -102,6 +126,7 @@ export default function EventGallery({ title, images, onClose }: EventGalleryPro
   const [isVisible, setIsVisible] = useState(false);
   const [viewerIndex, setViewerIndex] = useState<number | null>(null);
   const [isImageLoaded, setIsImageLoaded] = useState(false);
+  const [loadedThumbs, setLoadedThumbs] = useState<Set<number>>(() => new Set());
   const touchStartX = useRef<number | null>(null);
 
   const goToPrevious = useCallback(() => {
@@ -135,6 +160,22 @@ export default function EventGallery({ title, images, onClose }: EventGalleryPro
       document.documentElement.style.overflow = '';
     };
   }, []);
+
+  // Preload the next and previous full-size images in the background
+  // whenever the viewer is open, so paging between them feels instant
+  // instead of waiting on a fresh network request each time. Uses a
+  // plain Image() object (never attached to the DOM) purely to warm the
+  // browser's HTTP cache — the heavy originals are never touched, only
+  // the already-small optimized copies.
+  useEffect(() => {
+    if (viewerIndex === null || images.length <= 1) return;
+    const nextIndex = (viewerIndex + 1) % images.length;
+    const previousIndex = (viewerIndex - 1 + images.length) % images.length;
+    [images[nextIndex], images[previousIndex]].forEach((image) => {
+      const preloadImage = new window.Image();
+      preloadImage.src = image.fullSrc;
+    });
+  }, [viewerIndex, images]);
 
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
@@ -228,19 +269,34 @@ export default function EventGallery({ title, images, onClose }: EventGalleryPro
           >
             {images.map((image, index) => (
               <button
-                key={image.src}
+                key={image.thumbSrc}
                 type="button"
                 onClick={() => openViewerAt(index)}
                 className="group relative aspect-[4/5] w-full overflow-hidden rounded-lg bg-[var(--color-card)]/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-primary-gold)]"
                 aria-label={`הצגת תמונה ${index + 1} מתוך ${images.length} — ${title}`}
               >
+                {!loadedThumbs.has(index) && (
+                  <span
+                    className="absolute inset-0 animate-pulse bg-[var(--color-card)]/10"
+                    aria-hidden="true"
+                  />
+                )}
                 <Image
-                  src={image.src}
+                  src={image.thumbSrc}
                   alt={`${title} - תמונה ${index + 1} מתוך ${images.length}`}
                   fill
                   loading="lazy"
                   sizes="(max-width: 639px) 50vw, (max-width: 1023px) 33vw, 25vw"
-                  className="object-cover transition-transform duration-300 ease-out group-hover:scale-105"
+                  onLoad={() =>
+                    setLoadedThumbs((current) => {
+                      const next = new Set(current);
+                      next.add(index);
+                      return next;
+                    })
+                  }
+                  className={`object-cover transition-all duration-300 ease-out group-hover:scale-105 ${
+                    loadedThumbs.has(index) ? 'opacity-100' : 'opacity-0'
+                  }`}
                 />
               </button>
             ))}
@@ -268,14 +324,15 @@ export default function EventGallery({ title, images, onClose }: EventGalleryPro
           </button>
 
           <div
-            className="flex max-h-full flex-col items-center gap-3"
+            className="relative flex max-h-full flex-col items-center gap-3"
             onTouchStart={handleTouchStart}
             onTouchEnd={handleTouchEnd}
           >
+            {!isImageLoaded && <LoadingSpinner />}
             {activeImage && (
               <Image
-                key={activeImage.src}
-                src={activeImage.src}
+                key={activeImage.fullSrc}
+                src={activeImage.fullSrc}
                 alt={`${title} - תמונה ${viewerIndex + 1} מתוך ${images.length}`}
                 width={activeImage.width}
                 height={activeImage.height}
