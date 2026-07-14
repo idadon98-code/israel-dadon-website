@@ -24,13 +24,19 @@ export const metadata: Metadata = {
   keywords: [
     "צילום אירועים",
     "צלם אירועים",
+    "צילום חתונות",
     "צילום בר מצווה",
     "צילום בת מצווה",
     "צילום עלייה לתורה",
     "צילום הכנסת ספר תורה",
     "הדפסת מגנטים לאירועים",
+    "אלבומי תמונות",
     "ישראל דדון",
   ],
+  robots: {
+    index: true,
+    follow: true,
+  },
   openGraph: {
     title: siteConfig.title,
     description: siteConfig.description,
@@ -49,13 +55,15 @@ export const metadata: Metadata = {
 const localBusinessJsonLd = {
   "@context": "https://schema.org",
   "@type": "LocalBusiness",
-  name: siteConfig.title,
+  name: siteConfig.businessName,
+  alternateName: siteConfig.businessNameEn,
   description: siteConfig.description,
   url: siteConfig.url,
   telephone: siteConfig.phoneIntl,
   image: `${siteConfig.url}/images/about/cover.jpg`,
   sameAs: [siteConfig.instagramUrl],
   areaServed: "IL",
+  inLanguage: "he",
 };
 
 export default function RootLayout({
