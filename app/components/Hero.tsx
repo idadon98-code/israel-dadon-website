@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 import { Heebo } from 'next/font/google';
 
 /**
@@ -91,11 +92,13 @@ export default function Hero({
               data/battery cost low on phones where a full-screen
               autoplay video isn't worth it. */}
           {posterSrc && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
+            <Image
               src={posterSrc}
               alt=""
-              className="absolute inset-0 h-full w-full object-cover"
+              fill
+              priority
+              sizes="100vw"
+              className="object-cover"
             />
           )}
 

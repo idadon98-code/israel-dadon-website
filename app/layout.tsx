@@ -17,6 +17,9 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
   title: siteConfig.title,
   description: siteConfig.description,
+  alternates: {
+    canonical: siteConfig.url,
+  },
   keywords: [
     "צילום אירועים",
     "צלם אירועים",
@@ -70,6 +73,12 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessJsonLd) }}
         />
+        <a
+          href="#home"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:right-4 focus:z-[100] focus:rounded-md focus:bg-[var(--color-primary-gold)] focus:px-5 focus:py-3 focus:text-sm focus:font-semibold focus:text-[var(--color-text-on-gold)] focus:shadow-[0_2px_10px_rgba(0,0,0,0.15)] focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-[var(--color-text-primary)]"
+        >
+          דילוג לתוכן הראשי
+        </a>
         {children}
       </body>
     </html>

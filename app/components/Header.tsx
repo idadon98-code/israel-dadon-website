@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Heebo } from 'next/font/google';
 
 /**
@@ -70,6 +70,8 @@ export default function Header({
 }: HeaderProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const hamburgerRef = useRef<HTMLButtonElement>(null);
 
   // Add the hairline border + soft shadow once the page has scrolled a bit.
   useEffect(() => {
@@ -79,22 +81,45 @@ export default function Header({
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  // Lock body scroll while the full-screen mobile menu is open.
+  // Lock body scroll while the full-screen mobile menu is open, move focus
+  // into it, and return focus to the hamburger button when it closes.
   useEffect(() => {
     document.body.style.overflow = isMenuOpen ? 'hidden' : '';
+    if (isMenuOpen) {
+      menuRef.current?.querySelector<HTMLAnchorElement>('a')?.focus();
+    } else {
+      hamburgerRef.current?.focus();
+    }
     return () => {
       document.body.style.overflow = '';
     };
   }, [isMenuOpen]);
 
-  // Close the mobile menu on Escape for keyboard users.
+  // Close the mobile menu on Escape, and trap Tab/Shift+Tab focus inside it
+  // while it's open so keyboard focus can't leak into the page behind it.
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setIsMenuOpen(false);
+      if (e.key === 'Escape') {
+        setIsMenuOpen(false);
+        return;
+      }
+      if (e.key === 'Tab' && isMenuOpen) {
+        const focusable = menuRef.current?.querySelectorAll<HTMLElement>('a');
+        if (!focusable || focusable.length === 0) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
     };
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, []);
+  }, [isMenuOpen]);
 
   return (
     <header
@@ -149,6 +174,7 @@ export default function Header({
 
           {/* Hamburger — visible only below md, matching the nav's md breakpoint */}
           <button
+            ref={hamburgerRef}
             type="button"
             aria-label={isMenuOpen ? 'סגירת תפריט' : 'פתיחת תפריט'}
             aria-expanded={isMenuOpen}
@@ -180,6 +206,11 @@ export default function Header({
       {/* Full-screen mobile menu panel — matches the md breakpoint */}
       <div
         id="mobile-menu"
+        ref={menuRef}
+        role="dialog"
+        aria-modal={isMenuOpen}
+        aria-label="תפריט ניווט"
+        inert={!isMenuOpen}
         className={`fixed inset-x-0 bottom-0 top-[var(--header-height)] z-40 bg-[var(--color-card)] transition-opacity duration-300 ease-out md:hidden ${
           isMenuOpen ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'
         }`}

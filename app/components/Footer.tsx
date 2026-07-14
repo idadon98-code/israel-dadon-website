@@ -133,7 +133,7 @@ export default function Footer({
   whatsapp = '050-9978499',
   instagramHandle = 'Israel_Dadon.photographer',
   instagramHref = 'https://www.instagram.com/israel_dadon1?igsh=MjZ1bDk2b2FseTZx&utm_source=qr',
-  copyrightLine = '© 2026 ישראל דדון. כל הזכויות שמורות.',
+  copyrightLine = `© ${new Date().getFullYear()} ישראל דדון. כל הזכויות שמורות.`,
 }: FooterProps) {
   const whatsappHref = `https://wa.me/972${whatsapp.replace(/\D/g, '').replace(/^0/, '')}`;
   const phoneHref = `tel:${phone.replace(/\D/g, '')}`;

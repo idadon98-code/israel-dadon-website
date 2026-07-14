@@ -27,7 +27,7 @@ const eventTypeOptions = [
   'הכנסת ספר תורה',
   'מגנטים לאירוע',
   'חתונה',
-   'חינה',
+  'חינה',
   'אחר',
 ];
 
@@ -64,6 +64,10 @@ export default function ContactSection({
   whatsappHref = 'https://wa.me/972509978499',
 }: ContactSectionProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  // Built from local date parts (not toISOString, which is UTC and can be a
+  // day off near midnight) so "today" matches the visitor's own calendar day.
+  const now = new Date();
+  const todayIsoDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -109,7 +113,7 @@ export default function ContactSection({
 
           {/* Form card — lands on the left in this RTL grid */}
           <div className="rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] p-6 shadow-[0_1px_10px_rgba(0,0,0,0.05)] sm:p-8">
-            <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-5">
+            <form onSubmit={handleSubmit} className="flex flex-col gap-5">
               <div className="flex flex-col gap-2">
                 <label
                   htmlFor="contact-name"
@@ -141,6 +145,8 @@ export default function ContactSection({
                   type="tel"
                   autoComplete="tel"
                   required
+                  pattern="[\d\-\+\s()]{7,20}"
+                  title="מספר טלפון תקין, לדוגמה: 050-0000000"
                   className={fieldClasses}
                   placeholder="050-0000000"
                 />
@@ -182,6 +188,7 @@ export default function ContactSection({
                   id="contact-date"
                   name="eventDate"
                   type="date"
+                  min={todayIsoDate}
                   className={fieldClasses}
                 />
               </div>

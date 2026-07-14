@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import Image from 'next/image';
 import { Heebo } from 'next/font/google';
 
 /** Single typeface for the entire site: Heebo. */
@@ -18,6 +19,9 @@ export interface PortfolioCategory {
   label: string;
   /** Path to the category's cover image under public/images/ */
   image: string;
+  /** Real pixel dimensions of `image`, used to size the Lightbox correctly */
+  width: number;
+  height: number;
 }
 
 export interface PortfolioProps {
@@ -34,21 +38,29 @@ const defaultCategories: PortfolioCategory[] = [
     id: 'aliyah-torah',
     label: 'עלייה לתורה',
     image: '/images/aliyah-torah/aliyah.jpg',
+    width: 8256,
+    height: 5504,
   },
   {
     id: 'bar-mitzvah',
     label: 'בר מצווה',
     image: '/images/bar-mitzvah/bar.jpg',
+    width: 8256,
+    height: 5504,
   },
   {
     id: 'bat-mitzvah',
     label: 'בת מצווה',
     image: '/images/bat-mitzvah/cover.jpg',
+    width: 8256,
+    height: 5504,
   },
   {
     id: 'sefer-torah',
     label: 'הכנסת ספר תורה',
     image: '/images/sefer-torah/cover.jpg',
+    width: 4088,
+    height: 6132,
   },
 ];
 
@@ -117,12 +129,13 @@ function PortfolioCard({
       aria-label={`צפייה בתמונה מקטגוריית ${category.label}`}
     >
       {/* Placeholder / photography image */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
+      <Image
         src={category.image}
         alt={`עבודות נבחרות — ${category.label}`}
+        fill
         loading="lazy"
-        className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+        sizes="(max-width: 639px) 100vw, (max-width: 1279px) 50vw, 640px"
+        className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
       />
 
       {/* Bottom gradient — keeps the label readable over any image */}
@@ -317,12 +330,14 @@ function Lightbox({
         }`}
         onClick={(event) => event.stopPropagation()}
       >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
+        <Image
           src={category.image}
           alt={`עבודות נבחרות — ${category.label}`}
+          width={category.width}
+          height={category.height}
+          sizes="(max-width: 768px) 100vw, 768px"
           onLoad={() => setIsImageLoaded(true)}
-          className={`max-h-[75vh] w-auto max-w-full rounded-lg object-contain shadow-[0_10px_40px_rgba(0,0,0,0.3)] transition-opacity duration-300 ease-out ${
+          className={`h-auto max-h-[75vh] w-auto max-w-full rounded-lg object-contain shadow-[0_10px_40px_rgba(0,0,0,0.3)] transition-opacity duration-300 ease-out ${
             isImageLoaded ? 'opacity-100' : 'opacity-0'
           }`}
         />
