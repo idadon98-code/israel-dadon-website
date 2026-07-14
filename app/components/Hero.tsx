@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { Heebo } from 'next/font/google';
+import HeroGallery from './HeroGallery';
 
 /**
  * Single typeface for the entire site: Heebo. Multiple weights are
@@ -85,7 +86,7 @@ export default function Hero({
       id="home"
       dir="rtl"
       aria-label="פתיחה — Israel Dadon Photography"
-      className={`${heebo.variable} relative flex min-h-[420px] w-full items-center overflow-hidden sm:min-h-[480px] lg:min-h-[540px] ${
+      className={`${heebo.variable} relative flex min-h-[420px] w-full items-center overflow-hidden sm:min-h-[480px] lg:min-h-[640px] ${
         hasMedia ? 'bg-[var(--color-text-primary)]' : 'bg-[var(--color-background)]'
       } font-[family-name:var(--font-heebo)]`}
     >
@@ -140,48 +141,65 @@ export default function Hero({
         />
       )}
 
-      {/* Content */}
+      {/* Content — text column + editorial photo gallery. The gallery
+          only appears in the no-media default (the only path currently
+          used); the video/poster path keeps its original single-column
+          text-over-photo layout untouched. */}
       <div className="relative z-10 mx-auto w-full max-w-[1280px] px-6 py-16 sm:px-10 sm:py-20 lg:px-16 lg:py-24">
-        <h1
-          className={`max-w-3xl text-[38px] font-bold leading-[1.15] sm:text-[56px] lg:text-[80px] ${
-            hasMedia ? 'text-[var(--color-card)]' : 'text-[var(--color-text-primary)]'
-          } ${fadeUp} ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'}`}
-        >
-          {headline}
-        </h1>
+        <div className={hasMedia ? '' : 'grid gap-10 lg:grid-cols-2 lg:items-center lg:gap-16'}>
+          <div>
+            <h1
+              className={`max-w-3xl text-[38px] font-bold leading-[1.15] sm:text-[56px] lg:text-[64px] ${
+                hasMedia ? 'text-[var(--color-card)]' : 'text-[var(--color-text-primary)]'
+              } ${fadeUp} ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'}`}
+            >
+              {headline}
+            </h1>
 
-        <p
-          className={`mt-6 max-w-xl text-base font-normal leading-relaxed sm:text-lg ${
-            hasMedia ? 'text-[var(--color-card)]/80' : 'text-[var(--color-text-secondary)]'
-          } ${fadeUp} delay-150 ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'}`}
-        >
-          {subheadline}
-        </p>
+            <p
+              className={`mt-6 max-w-xl text-base font-normal leading-relaxed sm:text-lg ${
+                hasMedia ? 'text-[var(--color-card)]/80' : 'text-[var(--color-text-secondary)]'
+              } ${fadeUp} delay-150 ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'}`}
+            >
+              {subheadline}
+            </p>
 
-        <div
-          className={`mt-10 flex flex-col gap-4 sm:flex-row ${fadeUp} delay-300 ${
-            isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'
-          }`}
-        >
-          <a
-            href={primaryCta.href}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center justify-center rounded-md bg-[var(--color-primary-gold)] px-8 py-4 text-base font-medium text-[var(--color-text-on-gold)] shadow-[0_1px_6px_rgba(0,0,0,0.05)] transition-all duration-200 ease-out hover:-translate-y-0.5 hover:bg-[var(--color-primary-gold-hover)] hover:shadow-[0_4px_14px_rgba(0,0,0,0.08)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-primary-gold)] motion-reduce:transition-none motion-reduce:hover:translate-y-0"
-          >
-            {primaryCta.label}
-          </a>
+            <div
+              className={`mt-10 flex flex-col gap-4 sm:flex-row ${fadeUp} delay-300 ${
+                isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'
+              }`}
+            >
+              <a
+                href={primaryCta.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center rounded-md bg-[var(--color-primary-gold)] px-8 py-4 text-base font-medium text-[var(--color-text-on-gold)] shadow-[0_1px_6px_rgba(0,0,0,0.05)] transition-all duration-200 ease-out hover:-translate-y-0.5 hover:bg-[var(--color-primary-gold-hover)] hover:shadow-[0_4px_14px_rgba(0,0,0,0.08)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-primary-gold)] motion-reduce:transition-none motion-reduce:hover:translate-y-0"
+              >
+                {primaryCta.label}
+              </a>
 
-          <a
-            href={secondaryCta.href}
-            className={`inline-flex items-center justify-center rounded-md border px-8 py-4 text-base font-medium transition-all duration-200 ease-out motion-reduce:transition-none ${
-              hasMedia
-                ? 'border-[var(--color-card)]/50 text-[var(--color-card)] hover:border-[var(--color-card)] hover:bg-[var(--color-card)]/10'
-                : 'border-[var(--color-border)] bg-[var(--color-card)] text-[var(--color-text-primary)] shadow-[0_1px_6px_rgba(0,0,0,0.04)] hover:border-[var(--color-primary-gold)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.06)]'
-            }`}
-          >
-            {secondaryCta.label}
-          </a>
+              <a
+                href={secondaryCta.href}
+                className={`inline-flex items-center justify-center rounded-md border px-8 py-4 text-base font-medium transition-all duration-200 ease-out motion-reduce:transition-none ${
+                  hasMedia
+                    ? 'border-[var(--color-card)]/50 text-[var(--color-card)] hover:border-[var(--color-card)] hover:bg-[var(--color-card)]/10'
+                    : 'border-[var(--color-border)] bg-[var(--color-card)] text-[var(--color-text-primary)] shadow-[0_1px_6px_rgba(0,0,0,0.04)] hover:border-[var(--color-primary-gold)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.06)]'
+                }`}
+              >
+                {secondaryCta.label}
+              </a>
+            </div>
+          </div>
+
+          {!hasMedia && (
+            <div
+              className={`${fadeUp} delay-150 ${
+                isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'
+              }`}
+            >
+              <HeroGallery />
+            </div>
+          )}
         </div>
       </div>
 
