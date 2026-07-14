@@ -1,4 +1,5 @@
 import { Heebo } from 'next/font/google';
+import ScrollReveal from './ScrollReveal';
 
 /** Single typeface for the entire site: Heebo. */
 const heebo = Heebo({
@@ -91,7 +92,7 @@ export default function HowItWorks({
     >
       <div className="mx-auto max-w-[1280px] px-6 sm:px-10 lg:px-16">
         {/* Section header */}
-        <div className="mx-auto max-w-xl text-center">
+        <ScrollReveal variant="fade-up" className="mx-auto max-w-xl text-center">
           <p className="text-sm font-medium tracking-wide text-[var(--color-primary-gold-hover)]">
             {eyebrow}
           </p>
@@ -101,7 +102,7 @@ export default function HowItWorks({
           <p className="mt-4 text-base font-normal leading-relaxed text-[var(--color-text-secondary)] sm:text-lg">
             {subtitle}
           </p>
-        </div>
+        </ScrollReveal>
 
         {/* Desktop: horizontal timeline */}
         <div className="relative mt-16 hidden lg:grid lg:grid-cols-4 lg:gap-8">
@@ -111,8 +112,10 @@ export default function HowItWorks({
           />
 
           {steps.map((step, index) => (
-            <div
+            <ScrollReveal
               key={step.title}
+              variant="fade-up"
+              delayMs={index * 90}
               className="group relative flex flex-col items-center gap-4 text-center"
             >
               <StepNumber index={index} />
@@ -122,7 +125,7 @@ export default function HowItWorks({
               <p className="max-w-[230px] text-sm font-normal leading-relaxed text-[var(--color-text-secondary)]">
                 {step.text}
               </p>
-            </div>
+            </ScrollReveal>
           ))}
         </div>
 
@@ -134,7 +137,13 @@ export default function HowItWorks({
           />
 
           {steps.map((step, index) => (
-            <li key={step.title} className="group relative flex items-start gap-5">
+            <ScrollReveal
+              key={step.title}
+              as="li"
+              variant="fade-up"
+              delayMs={index * 90}
+              className="group relative flex items-start gap-5"
+            >
               <StepNumber index={index} />
               <div className="pt-2.5">
                 <h3 className="text-lg font-semibold text-[var(--color-text-primary)] transition-colors duration-300 ease-out group-hover:text-[var(--color-primary-gold-hover)]">
@@ -144,7 +153,7 @@ export default function HowItWorks({
                   {step.text}
                 </p>
               </div>
-            </li>
+            </ScrollReveal>
           ))}
         </ol>
       </div>

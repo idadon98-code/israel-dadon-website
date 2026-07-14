@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { Heebo } from 'next/font/google';
+import ScrollReveal from './ScrollReveal';
 
 /** Single typeface for the entire site: Heebo. */
 const heebo = Heebo({
@@ -135,7 +136,7 @@ export default function Magnets({
     >
       <div className="mx-auto max-w-[1280px] px-6 sm:px-10 lg:px-16">
         {/* Section header */}
-        <div className="mx-auto max-w-xl text-center">
+        <ScrollReveal variant="fade-up" className="mx-auto max-w-xl text-center">
           <p className="text-sm font-medium tracking-wide text-[var(--color-primary-gold-hover)]">
             {eyebrow}
           </p>
@@ -145,13 +146,15 @@ export default function Magnets({
           <p className="mt-4 text-base font-normal leading-relaxed text-[var(--color-text-secondary)] sm:text-lg">
             {subtitle}
           </p>
-        </div>
+        </ScrollReveal>
 
         {/* Feature grid */}
         <div className="mt-14 grid grid-cols-1 gap-6 sm:grid-cols-3 sm:gap-7 lg:gap-8">
-          {features.map((feature) => (
-            <div
+          {features.map((feature, index) => (
+            <ScrollReveal
               key={feature.title}
+              variant="fade-up"
+              delayMs={index * 100}
               className="group flex flex-col items-center gap-4 rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-6 py-8 text-center shadow-[0_1px_6px_rgba(0,0,0,0.03)] transition-all duration-300 ease-out hover:-translate-y-1 hover:border-[var(--color-primary-gold)] hover:shadow-[0_6px_20px_rgba(0,0,0,0.06)]"
             >
               <span
@@ -168,7 +171,7 @@ export default function Magnets({
               <p className="text-sm font-normal leading-relaxed text-[var(--color-text-secondary)] sm:text-base">
                 {feature.text}
               </p>
-            </div>
+            </ScrollReveal>
           ))}
         </div>
 

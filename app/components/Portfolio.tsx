@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { Heebo } from 'next/font/google';
 import EventGallery, { type EventImage } from './EventGallery';
+import ScrollReveal from './ScrollReveal';
 
 /** Single typeface for the entire site: Heebo. */
 const heebo = Heebo({
@@ -437,7 +438,7 @@ export default function Portfolio({
     >
       <div className="mx-auto max-w-[1280px] px-6 sm:px-10 lg:px-16">
         {/* Section header */}
-        <div className="mx-auto max-w-xl text-center">
+        <ScrollReveal variant="fade-up" className="mx-auto max-w-xl text-center">
           <p className="text-sm font-medium tracking-wide text-[var(--color-primary-gold-hover)]">
             {eyebrow}
           </p>
@@ -447,22 +448,23 @@ export default function Portfolio({
           <p className="mt-4 text-base font-normal leading-relaxed text-[var(--color-text-secondary)] sm:text-lg">
             {subtitle}
           </p>
-        </div>
+        </ScrollReveal>
 
         {/* Category grid */}
         <div className="mt-14 grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-7 lg:gap-8">
           {categories.map((category, index) => (
-            <PortfolioCard
-              key={category.id}
-              category={category}
-              onOpen={() => {
-                if (category.galleryImages && category.galleryImages.length > 0) {
-                  setOpenGalleryId(category.id);
-                } else {
-                  setActiveIndex(index);
-                }
-              }}
-            />
+            <ScrollReveal key={category.id} variant="fade-scale" delayMs={index * 100}>
+              <PortfolioCard
+                category={category}
+                onOpen={() => {
+                  if (category.galleryImages && category.galleryImages.length > 0) {
+                    setOpenGalleryId(category.id);
+                  } else {
+                    setActiveIndex(index);
+                  }
+                }}
+              />
+            </ScrollReveal>
           ))}
         </div>
 

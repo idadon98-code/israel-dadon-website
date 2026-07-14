@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { Heebo } from 'next/font/google';
+import ScrollReveal from './ScrollReveal';
 
 /** Single typeface for the entire site: Heebo. */
 const heebo = Heebo({
@@ -143,9 +144,7 @@ const defaultCards: WhyChooseMeCard[] = [
  */
 function WhyChooseMeCardItem({ card }: { card: WhyChooseMeCard }) {
   return (
-    <div
-      className="group flex flex-col items-center gap-4 rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-6 py-8 text-center shadow-[0_1px_6px_rgba(0,0,0,0.03)] transition-all duration-300 ease-out hover:-translate-y-1 hover:border-[var(--color-primary-gold)] hover:shadow-[0_6px_20px_rgba(0,0,0,0.06)]"
-    >
+    <div className="group flex flex-col items-center gap-4 rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-6 py-8 text-center shadow-[0_1px_6px_rgba(0,0,0,0.03)] transition-all duration-300 ease-out hover:-translate-y-1 hover:border-[var(--color-primary-gold)] hover:shadow-[0_6px_20px_rgba(0,0,0,0.06)]">
       <span
         className="flex h-14 w-14 items-center justify-center rounded-full border border-[var(--color-border)] text-[var(--color-primary-gold-hover)] transition-colors duration-300 ease-out group-hover:border-[var(--color-primary-gold)] group-hover:bg-[var(--color-primary-gold)]/10"
         aria-hidden="true"
@@ -190,7 +189,7 @@ export default function WhyChooseMe({
     >
       <div className="mx-auto max-w-[1280px] px-6 sm:px-10 lg:px-16">
         {/* Section header */}
-        <div className="mx-auto max-w-xl text-center">
+        <ScrollReveal variant="fade-up" className="mx-auto max-w-xl text-center">
           <p className="text-sm font-medium tracking-wide text-[var(--color-primary-gold-hover)]">
             {eyebrow}
           </p>
@@ -200,12 +199,14 @@ export default function WhyChooseMe({
           <p className="mt-4 text-base font-normal leading-relaxed text-[var(--color-text-secondary)] sm:text-lg">
             {subtitle}
           </p>
-        </div>
+        </ScrollReveal>
 
         {/* Cards grid */}
         <div className="mt-14 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
-          {cards.map((card) => (
-            <WhyChooseMeCardItem key={card.title} card={card} />
+          {cards.map((card, index) => (
+            <ScrollReveal key={card.title} variant="fade-up" delayMs={index * 90}>
+              <WhyChooseMeCardItem card={card} />
+            </ScrollReveal>
           ))}
         </div>
       </div>

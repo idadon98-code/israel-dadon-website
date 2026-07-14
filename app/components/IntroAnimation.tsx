@@ -4,11 +4,13 @@ import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 
 /**
- * IntroAnimation — a one-time, ~2.7s opening sequence shown over the
- * whole site on load: black screen → thin gold camera silhouette draws
- * on → a single horizontal light sweep passes through the lens → the
- * camera crossfades into the existing brand logo → the whole overlay
- * fades away to reveal the real page underneath.
+ * IntroAnimation — a one-time, ~1.85s opening sequence shown over the
+ * whole site on load: black screen → large thin gold camera silhouette
+ * draws on → right as the drawing finishes, the lens gives a quick
+ * shutter-click pulse and a full-screen camera flash fires → the flash's
+ * brightness hides a fast crossfade from the camera into the existing
+ * brand logo → the whole overlay fades away to reveal the real page
+ * underneath, immediately after the flash.
  *
  * Implementation: pure CSS/SVG (no animation library, no video). All
  * timing lives in the <style jsx> block below as a sequence of delayed
@@ -24,14 +26,15 @@ import Image from 'next/image';
  * it can never linger and block later clicks on the header/nav.
  *
  * Reduced motion: prefers-reduced-motion switches to a plain, short
- * fade (no drawing, no sweep) entirely via the CSS media query below —
- * the JSX itself doesn't change based on JS-detected motion preference.
+ * fade (no drawing, no shutter click, no flash) entirely via the CSS
+ * media query below — the JSX itself doesn't change based on
+ * JS-detected motion preference.
  */
 
 // Safety net only — the real timing lives in CSS. If `animationend`
 // somehow never fires, this guarantees the overlay can't block the
 // site forever.
-const SAFETY_UNMOUNT_MS = 3500;
+const SAFETY_UNMOUNT_MS = 2600;
 
 export default function IntroAnimation() {
   const [isVisible, setIsVisible] = useState(true);
@@ -88,12 +91,12 @@ export default function IntroAnimation() {
         isSkipping ? 'intro-overlay--skipping' : ''
       }`}
     >
-      <div className="relative flex h-32 w-64 items-center justify-center sm:h-40 sm:w-80">
+      <div className="relative flex h-[156px] w-[206px] items-center justify-center sm:h-[230px] sm:w-[310px]">
         <div
           className="intro-icon-wrap absolute inset-0 flex items-center justify-center overflow-hidden"
           aria-hidden="true"
         >
-          <svg viewBox="0 0 200 140" className="intro-camera h-20 w-auto sm:h-28" fill="none">
+          <svg viewBox="0 0 200 140" className="intro-camera h-[116px] w-auto sm:h-[190px]" fill="none">
             <rect
               x="76"
               y="16"
@@ -137,7 +140,6 @@ export default function IntroAnimation() {
               strokeLinecap="round"
             />
           </svg>
-          <span className="intro-sweep" />
         </div>
 
         <Image
@@ -157,6 +159,10 @@ export default function IntroAnimation() {
       >
         דלג
       </button>
+
+      {/* Camera flash — a brief full-screen white flash timed to the end
+          of the camera drawing, simulating a real photo being taken. */}
+      <span className="intro-flash absolute inset-0 bg-white" aria-hidden="true" />
 
       <style jsx>{`
         @keyframes introDraw {
@@ -178,19 +184,25 @@ export default function IntroAnimation() {
             filter: drop-shadow(0 0 4px rgba(203, 183, 140, 0.35));
           }
         }
-        @keyframes introSweep {
+        @keyframes introShutterClick {
           0% {
-            transform: translateY(-50%) translateX(-160%);
+            transform: scale(1);
+          }
+          45% {
+            transform: scale(0.88);
+          }
+          100% {
+            transform: scale(1);
+          }
+        }
+        @keyframes introFlash {
+          0% {
             opacity: 0;
           }
-          15% {
-            opacity: 1;
-          }
-          85% {
+          12% {
             opacity: 1;
           }
           100% {
-            transform: translateY(-50%) translateX(160%);
             opacity: 0;
           }
         }
@@ -232,45 +244,34 @@ export default function IntroAnimation() {
           animation: introDraw 1000ms ease-out 150ms forwards;
         }
         .intro-camera {
+          transform-origin: center;
           animation:
             introGlow 1000ms ease-out 150ms forwards,
-            introCameraFadeOut 450ms ease-in 1550ms forwards;
+            introShutterClick 180ms ease-in-out 1000ms forwards,
+            introCameraFadeOut 150ms ease-in 1180ms forwards;
         }
-        .intro-sweep {
-          position: absolute;
-          top: 63%;
-          left: 0;
-          width: 100%;
-          height: 10%;
-          transform: translateY(-50%) translateX(-160%);
-          background: linear-gradient(
-            90deg,
-            transparent,
-            var(--color-primary-gold) 45%,
-            #ffffff 50%,
-            var(--color-primary-gold) 55%,
-            transparent
-          );
-          filter: blur(3px);
+        .intro-flash {
           opacity: 0;
-          animation: introSweep 450ms ease-in-out 1150ms forwards;
+          pointer-events: none;
+          z-index: 20;
+          animation: introFlash 200ms ease-out 1150ms forwards;
         }
         :global(.intro-logo) {
           opacity: 0;
-          animation: introLogoFadeIn 450ms ease-out 1550ms forwards;
+          animation: introLogoFadeIn 150ms ease-out 1200ms forwards;
         }
         .intro-skip {
           opacity: 0;
           animation: introSkipButtonFadeIn 400ms ease-out 200ms forwards;
         }
         .intro-overlay {
-          animation: introOverlayFadeOut 500ms ease-out 2200ms forwards;
+          animation: introOverlayFadeOut 500ms ease-out 1350ms forwards;
         }
         .intro-overlay.intro-overlay--skipping {
           animation: introSkipFadeOut 300ms ease-out forwards;
         }
         .intro-overlay.intro-overlay--skipping .intro-camera,
-        .intro-overlay.intro-overlay--skipping .intro-sweep,
+        .intro-overlay.intro-overlay--skipping .intro-flash,
         .intro-overlay.intro-overlay--skipping .intro-logo,
         .intro-overlay.intro-overlay--skipping .intro-skip {
           animation-play-state: paused;
@@ -278,7 +279,7 @@ export default function IntroAnimation() {
 
         @media (prefers-reduced-motion: reduce) {
           .intro-camera,
-          .intro-sweep {
+          .intro-flash {
             display: none;
           }
           :global(.intro-logo) {

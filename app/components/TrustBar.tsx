@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { Heebo } from 'next/font/google';
+import ScrollReveal from './ScrollReveal';
 
 /** Single typeface for the entire site: Heebo. */
 const heebo = Heebo({
@@ -137,9 +138,12 @@ export default function TrustBar({ items = defaultItems }: TrustBarProps) {
             lg:grid-cols-4 lg:gap-y-0
           "
         >
-          {items.map((item) => (
-            <li
+          {items.map((item, index) => (
+            <ScrollReveal
               key={item.label}
+              as="li"
+              variant="fade-up"
+              delayMs={index * 90}
               className="
                 flex flex-col items-center gap-3 px-4 py-6 text-center
                 sm:py-8
@@ -156,7 +160,7 @@ export default function TrustBar({ items = defaultItems }: TrustBarProps) {
               <span className="text-sm font-medium leading-snug text-[var(--color-text-primary)] sm:text-base">
                 {item.label}
               </span>
-            </li>
+            </ScrollReveal>
           ))}
         </ul>
       </div>

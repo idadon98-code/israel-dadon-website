@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent } from 'react';
 import { Heebo } from 'next/font/google';
+import ScrollReveal from './ScrollReveal';
 
 const WEB3FORMS_ENDPOINT = 'https://api.web3forms.com/submit';
 const WEB3FORMS_ACCESS_KEY = 'a237aa74-4a1b-4f1c-9553-741fe33444b4';
@@ -109,7 +110,7 @@ export default function ContactSection({
       <div className="mx-auto max-w-[1280px] px-6 sm:px-10 lg:px-16">
         <div className="grid grid-cols-1 items-start gap-12 lg:grid-cols-2 lg:gap-16">
           {/* Contact copy + WhatsApp CTA — lands on the right in this RTL grid */}
-          <div>
+          <ScrollReveal variant="fade-up">
             <p className="text-sm font-medium tracking-wide text-[var(--color-primary-gold-hover)]">
               {eyebrow}
             </p>
@@ -128,10 +129,14 @@ export default function ContactSection({
             >
               {whatsappLabel}
             </a>
-          </div>
+          </ScrollReveal>
 
           {/* Form card — lands on the left in this RTL grid */}
-          <div className="rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] p-6 shadow-[0_1px_10px_rgba(0,0,0,0.05)] sm:p-8">
+          <ScrollReveal
+            variant="fade-up"
+            delayMs={100}
+            className="rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] p-6 shadow-[0_1px_10px_rgba(0,0,0,0.05)] sm:p-8"
+          >
             <form onSubmit={handleSubmit} className="flex flex-col gap-5">
               <input type="hidden" name="access_key" value={WEB3FORMS_ACCESS_KEY} />
               <input
@@ -266,7 +271,7 @@ export default function ContactSection({
                 </p>
               )}
             </form>
-          </div>
+          </ScrollReveal>
         </div>
       </div>
     </section>

@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import { Heebo } from 'next/font/google';
+import ScrollReveal from './ScrollReveal';
 
 /** Single typeface for the entire site: Heebo. */
 const heebo = Heebo({
@@ -62,8 +63,9 @@ export default function About({
       <div className="mx-auto max-w-[1280px] px-6 sm:px-10 lg:px-16">
         <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-2 lg:gap-16">
           {/* Text block — first in markup so it lands on the right in
-              this RTL grid; stacks below the image on mobile. */}
-          <div className="order-2 lg:order-1">
+              this RTL grid; stacks below the image on mobile. Enters from
+              the right, opposite the image's from-left entrance. */}
+          <ScrollReveal variant="from-right" className="order-2 lg:order-1">
             <span className="mb-4 block h-[2px] w-12 bg-[var(--color-primary-gold)]" aria-hidden="true" />
 
             <p className="text-sm font-medium tracking-wide text-[var(--color-primary-gold-hover)]">
@@ -97,11 +99,12 @@ export default function About({
             >
               {ctaLabel}
             </a>
-          </div>
+          </ScrollReveal>
 
           {/* Image block — second in markup so it lands on the left in
-              this RTL grid; stacks above the text on mobile. */}
-          <div className="order-1 lg:order-2">
+              this RTL grid; stacks above the text on mobile. Enters from
+              the left, opposite the text's from-right entrance. */}
+          <ScrollReveal variant="from-left" className="order-1 lg:order-2">
             <div className="relative aspect-[4/5] w-full overflow-hidden rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] shadow-[0_1px_10px_rgba(0,0,0,0.05)]">
               <Image
                 src={imageSrc}
@@ -111,7 +114,7 @@ export default function About({
                 className="object-cover"
               />
             </div>
-          </div>
+          </ScrollReveal>
         </div>
       </div>
     </section>
