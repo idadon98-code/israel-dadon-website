@@ -86,7 +86,7 @@ export default function Hero({
       id="home"
       dir="rtl"
       aria-label="פתיחה — Israel Dadon Photography"
-      className={`${heebo.variable} relative flex min-h-[420px] w-full items-center overflow-hidden sm:min-h-[480px] lg:min-h-[640px] ${
+      className={`${heebo.variable} relative flex min-h-[420px] w-full items-center overflow-hidden sm:min-h-[480px] lg:min-h-[760px] ${
         hasMedia ? 'bg-[var(--color-text-primary)]' : 'bg-[var(--color-background)]'
       } font-[family-name:var(--font-heebo)]`}
     >
@@ -146,8 +146,8 @@ export default function Hero({
           used); the video/poster path keeps its original single-column
           text-over-photo layout untouched. */}
       <div className="relative z-10 mx-auto w-full max-w-[1280px] px-6 py-16 sm:px-10 sm:py-20 lg:px-16 lg:py-24">
-        <div className={hasMedia ? '' : 'grid gap-10 lg:grid-cols-2 lg:items-center lg:gap-16'}>
-          <div>
+        <div className={hasMedia ? '' : 'grid gap-10 lg:grid-cols-12 lg:items-center lg:gap-10'}>
+          <div className={hasMedia ? '' : 'lg:col-span-4'}>
             <h1
               className={`max-w-3xl text-[38px] font-bold leading-[1.15] sm:text-[56px] lg:text-[64px] ${
                 hasMedia ? 'text-[var(--color-card)]' : 'text-[var(--color-text-primary)]'
@@ -193,7 +193,7 @@ export default function Hero({
 
           {!hasMedia && (
             <div
-              className={`${fadeUp} delay-150 ${
+              className={`lg:col-span-8 ${fadeUp} delay-150 ${
                 isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'
               }`}
             >
