@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { Heebo } from 'next/font/google';
+import EventGallery, { type EventImage } from './EventGallery';
 
 /** Single typeface for the entire site: Heebo. */
 const heebo = Heebo({
@@ -22,7 +23,55 @@ export interface PortfolioCategory {
   /** Real pixel dimensions of `image`, used to size the Lightbox correctly */
   width: number;
   height: number;
+  /** Full set of real event photos (public/images/events/<id>/...), shown
+   *  in the EventGallery grid + full-screen viewer. Only present for
+   *  categories that actually have a real events folder — categories
+   *  without one keep the older single-cover Lightbox behavior instead
+   *  of getting a placeholder gallery. */
+  galleryImages?: EventImage[];
 }
+
+const aliyahTorahImages: EventImage[] = [
+  { src: '/images/events/aliyah-torah/IMG_4583.JPG', width: 8256, height: 5504 },
+  { src: '/images/events/aliyah-torah/IMG_4585.JPG', width: 5504, height: 8256 },
+  { src: '/images/events/aliyah-torah/IMG_4586.JPG', width: 8256, height: 5504 },
+  { src: '/images/events/aliyah-torah/IMG_4589.JPG', width: 8256, height: 5504 },
+  { src: '/images/events/aliyah-torah/IMG_4601.JPG', width: 8256, height: 5504 },
+  { src: '/images/events/aliyah-torah/IMG_4614.JPG', width: 5504, height: 8256 },
+  { src: '/images/events/aliyah-torah/IMG_4616.JPG', width: 8256, height: 5504 },
+  { src: '/images/events/aliyah-torah/IMG_4617.JPG', width: 8256, height: 5504 },
+  { src: '/images/events/aliyah-torah/IMG_4625.JPG', width: 8256, height: 5504 },
+  { src: '/images/events/aliyah-torah/IMG_4626.JPG', width: 8256, height: 5504 },
+  { src: '/images/events/aliyah-torah/IMG_4629.JPG', width: 8256, height: 5504 },
+  { src: '/images/events/aliyah-torah/IMG_4633.JPG', width: 8256, height: 5504 },
+];
+
+const batMitzvahImages: EventImage[] = [
+  { src: '/images/events/bat-mitzvah/DSC_2803.jpg', width: 5504, height: 8256 },
+  { src: '/images/events/bat-mitzvah/DSC_2813.jpg', width: 5504, height: 8256 },
+  { src: '/images/events/bat-mitzvah/DSC_2824.jpg', width: 5504, height: 8256 },
+  { src: '/images/events/bat-mitzvah/DSC_2948.jpg', width: 8256, height: 5504 },
+  { src: '/images/events/bat-mitzvah/DSC_2957.jpg', width: 8256, height: 5504 },
+  { src: '/images/events/bat-mitzvah/DSC_3063.jpg', width: 8256, height: 5504 },
+  { src: '/images/events/bat-mitzvah/DSC_3089.jpg', width: 5504, height: 8256 },
+  { src: '/images/events/bat-mitzvah/DSC_3376.jpg', width: 8256, height: 5504 },
+];
+
+const seferTorahImages: EventImage[] = [
+  { src: '/images/events/sefer-torah/DSC_2716.JPG', width: 4128, height: 6192 },
+  { src: '/images/events/sefer-torah/DSC_2718.JPG', width: 6192, height: 4128 },
+  { src: '/images/events/sefer-torah/DSC_2773.JPG', width: 4128, height: 6192 },
+  { src: '/images/events/sefer-torah/DSC_2777-2.JPG', width: 4088, height: 6132 },
+  { src: '/images/events/sefer-torah/DSC_3027.JPG', width: 4128, height: 6192 },
+  { src: '/images/events/sefer-torah/DSC_3315.JPG', width: 6192, height: 4128 },
+  { src: '/images/events/sefer-torah/DSC_3878.JPG', width: 4128, height: 6192 },
+  { src: '/images/events/sefer-torah/DSC_4017.JPG', width: 6192, height: 4128 },
+  { src: '/images/events/sefer-torah/DSC_4197.JPG', width: 5845, height: 3897 },
+  { src: '/images/events/sefer-torah/DSC_4202.JPG', width: 6192, height: 4128 },
+  { src: '/images/events/sefer-torah/DSC_4206.JPG', width: 4128, height: 6192 },
+  { src: '/images/events/sefer-torah/DSC_4221.JPG', width: 6192, height: 4128 },
+  { src: '/images/events/sefer-torah/DSC_4264.JPG', width: 6192, height: 4128 },
+];
 
 export interface PortfolioProps {
   eyebrow?: string;
@@ -40,6 +89,7 @@ const defaultCategories: PortfolioCategory[] = [
     image: '/images/aliyah-torah/aliyah.jpg',
     width: 8256,
     height: 5504,
+    galleryImages: aliyahTorahImages,
   },
   {
     id: 'bar-mitzvah',
@@ -54,6 +104,7 @@ const defaultCategories: PortfolioCategory[] = [
     image: '/images/bat-mitzvah/cover.jpg',
     width: 8256,
     height: 5504,
+    galleryImages: batMitzvahImages,
   },
   {
     id: 'sefer-torah',
@@ -61,6 +112,7 @@ const defaultCategories: PortfolioCategory[] = [
     image: '/images/sefer-torah/cover.jpg',
     width: 4088,
     height: 6132,
+    galleryImages: seferTorahImages,
   },
 ];
 
@@ -109,10 +161,12 @@ function CloseIcon() {
  * gold focus-dot appears — the same lens-focusing motif used across the
  * site — while the image itself eases into a slightly closer crop.
  *
- * Behavior: opens the category's photo in the Lightbox below rather than
- * linking to an anchor — there's no separate per-category gallery page
- * yet, only a single cover photo each, so a full-size lightbox view is
- * the honest "view this category" action.
+ * Behavior: categories with a real events/ photo folder (galleryImages
+ * populated) open the full EventGallery — a thumbnail grid plus
+ * full-screen viewer for that event. Categories without one (currently
+ * only בר מצווה, which has no dedicated events folder yet) fall back to
+ * the single-cover Lightbox below rather than getting a placeholder
+ * gallery.
  */
 function PortfolioCard({
   category,
@@ -121,12 +175,17 @@ function PortfolioCard({
   category: PortfolioCategory;
   onOpen: () => void;
 }) {
+  const hasGallery = Boolean(category.galleryImages && category.galleryImages.length > 0);
   return (
     <button
       type="button"
       onClick={onOpen}
       className="group relative block aspect-[4/5] w-full overflow-hidden rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] text-right shadow-[0_1px_6px_rgba(0,0,0,0.04)] transition-shadow duration-300 hover:shadow-[0_6px_20px_rgba(0,0,0,0.07)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-primary-gold)]"
-      aria-label={`צפייה בתמונה מקטגוריית ${category.label}`}
+      aria-label={
+        hasGallery
+          ? `צפייה בגלריית התמונות של ${category.label}`
+          : `צפייה בתמונה מקטגוריית ${category.label}`
+      }
     >
       {/* Placeholder / photography image */}
       <Image
@@ -366,6 +425,8 @@ export default function Portfolio({
   categories = defaultCategories,
 }: PortfolioProps) {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const [openGalleryId, setOpenGalleryId] = useState<string | null>(null);
+  const openGalleryCategory = categories.find((category) => category.id === openGalleryId);
 
   return (
     <section
@@ -394,7 +455,13 @@ export default function Portfolio({
             <PortfolioCard
               key={category.id}
               category={category}
-              onOpen={() => setActiveIndex(index)}
+              onOpen={() => {
+                if (category.galleryImages && category.galleryImages.length > 0) {
+                  setOpenGalleryId(category.id);
+                } else {
+                  setActiveIndex(index);
+                }
+              }}
             />
           ))}
         </div>
@@ -418,6 +485,14 @@ export default function Portfolio({
           activeIndex={activeIndex}
           onClose={() => setActiveIndex(null)}
           onNavigate={setActiveIndex}
+        />
+      )}
+
+      {openGalleryCategory?.galleryImages && (
+        <EventGallery
+          title={openGalleryCategory.label}
+          images={openGalleryCategory.galleryImages}
+          onClose={() => setOpenGalleryId(null)}
         />
       )}
     </section>

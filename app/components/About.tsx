@@ -12,7 +12,9 @@ const heebo = Heebo({
 export interface AboutProps {
   eyebrow?: string;
   title?: string;
-  paragraph?: string;
+  /** Body copy, rendered as one <p> per array entry (three clearly
+   *  separated paragraphs by default). */
+  paragraphs?: string[];
   highlightLine?: string;
   ctaLabel?: string;
   ctaHref?: string;
@@ -40,7 +42,11 @@ export interface AboutProps {
 export default function About({
   eyebrow = 'נעים להכיר, ',
   title = 'ישראל דדון',
-  paragraph = 'צלם אירועים שמתמחה בתיעוד רגעים אמיתיים, מרגשים ובלתי נשכחים. מבחינתי צילום טוב הוא לא רק תמונה יפה, אלא חוויה רגועה, יחס אישי ותוצאה שנשארת איתכם לשנים.',
+  paragraphs = [
+    'אני ישראל דדון, צלם אירועים מאזור הדרום. את הדרך שלי בעולם הצילום התחלתי כבר בגיל 14, מתוך אהבה אמיתית לתפוס רגעים, רגשות וזיכרונות דרך העדשה.',
+    'לאחר שסיימתי את שירותי הקרבי, ובמקביל לשירות המילואים, הקמתי את העסק והפכתי את האהבה הגדולה שלי לצילום למקצוע. עם השנים צברתי ניסיון והתפתחתי מקצועית, והיום אני מתמחה בצילום אירועים, בר ובת מצווה, מגנטים ואלבומים.',
+    'מבחינתי צילום טוב הוא הרבה מעבר לתמונה יפה — זו היכולת לתעד את הרגעים הטבעיים והמרגשים ולהפוך אותם לזיכרונות שילוו אתכם לאורך שנים.',
+  ],
   highlightLine = 'אני מלווה כל לקוח באופן אישי — משלב התכנון ועד למסירת התמונות.',
   ctaLabel = 'בואו נדבר',
   ctaHref = 'https://wa.me/972509978499',
@@ -68,9 +74,16 @@ export default function About({
               {title}
             </h2>
 
-            <p className="mt-6 max-w-xl text-base font-normal leading-relaxed text-[var(--color-text-secondary)] sm:text-lg">
-              {paragraph}
-            </p>
+            <div className="mt-6 max-w-xl space-y-4">
+              {paragraphs.map((text) => (
+                <p
+                  key={text}
+                  className="text-base font-normal leading-relaxed text-[var(--color-text-secondary)] sm:text-lg"
+                >
+                  {text}
+                </p>
+              ))}
+            </div>
 
             <p className="mt-6 max-w-xl border-r-2 border-[var(--color-primary-gold)] pr-4 text-base font-medium leading-relaxed text-[var(--color-text-primary)] sm:text-lg">
               {highlightLine}
