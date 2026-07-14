@@ -3,6 +3,11 @@
 import { useState, type FormEvent } from 'react';
 import { Heebo } from 'next/font/google';
 
+const WEB3FORMS_ENDPOINT = 'https://api.web3forms.com/submit';
+const WEB3FORMS_ACCESS_KEY = 'a237aa74-4a1b-4f1c-9553-741fe33444b4';
+
+type SubmitStatus = 'idle' | 'submitting' | 'success' | 'error';
+
 /** Single typeface for the entire site: Heebo. */
 const heebo = Heebo({
   subsets: ['hebrew', 'latin'],
@@ -47,11 +52,11 @@ const fieldClasses =
  * rightmost column; the form card is placed second and lands on the
  * left. Both stack into a single column on mobile in the same order.
  *
- * Form behavior: this is a front-end-only placeholder for now — instead
- * of a real network submission, onSubmit prevents the default page
- * reload and shows a simple browser alert confirming receipt, exactly as
- * requested. Wiring this up to a real endpoint later only means
- * replacing the body of handleSubmit.
+ * Form behavior: submits to Web3Forms (https://api.web3forms.com/submit)
+ * via fetch. A status message (aria-live, so screen readers hear it too)
+ * only ever shows "success" once Web3Forms' own JSON response confirms
+ * it — a 200 alone isn't treated as success. The submit button disables
+ * and reads "שולח..." while the request is in flight.
  *
  * Colors: driven entirely by the CSS variables defined in globals.css.
  */
@@ -63,21 +68,35 @@ export default function ContactSection({
   whatsappLabel = 'שלחו הודעה בוואטסאפ',
   whatsappHref = 'https://wa.me/972509978499',
 }: ContactSectionProps) {
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [status, setStatus] = useState<SubmitStatus>('idle');
+  const isSubmitting = status === 'submitting';
   // Built from local date parts (not toISOString, which is UTC and can be a
   // day off near midnight) so "today" matches the visitor's own calendar day.
   const now = new Date();
   const todayIsoDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setIsSubmitting(true);
+    const form = event.currentTarget;
+    setStatus('submitting');
 
-    // Placeholder behavior for now — no network request yet.
-    window.alert('הטופס התקבל בהצלחה');
+    try {
+      const response = await fetch(WEB3FORMS_ENDPOINT, {
+        method: 'POST',
+        headers: { Accept: 'application/json' },
+        body: new FormData(form),
+      });
+      const result = await response.json();
 
-    event.currentTarget.reset();
-    setIsSubmitting(false);
+      if (response.ok && result.success) {
+        setStatus('success');
+        form.reset();
+      } else {
+        setStatus('error');
+      }
+    } catch {
+      setStatus('error');
+    }
   }
 
   return (
@@ -114,6 +133,24 @@ export default function ContactSection({
           {/* Form card — lands on the left in this RTL grid */}
           <div className="rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] p-6 shadow-[0_1px_10px_rgba(0,0,0,0.05)] sm:p-8">
             <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+              <input type="hidden" name="access_key" value={WEB3FORMS_ACCESS_KEY} />
+              <input
+                type="hidden"
+                name="subject"
+                value="פנייה חדשה מאתר Israel Dadon Photography"
+              />
+              <input type="hidden" name="from_name" value="Israel Dadon Photography Website" />
+              {/* Web3Forms honeypot — real visitors never see or fill this in;
+                  if it arrives non-empty, Web3Forms treats the submission as spam. */}
+              <input
+                type="checkbox"
+                name="botcheck"
+                className="hidden"
+                style={{ display: 'none' }}
+                tabIndex={-1}
+                autoComplete="off"
+              />
+
               <div className="flex flex-col gap-2">
                 <label
                   htmlFor="contact-name"
@@ -214,8 +251,20 @@ export default function ContactSection({
                 disabled={isSubmitting}
                 className="mt-2 inline-flex items-center justify-center rounded-md border border-[var(--color-primary-gold)] bg-[var(--color-primary-gold)] px-8 py-4 text-base font-semibold text-[var(--color-text-on-gold)] shadow-[0_2px_10px_rgba(0,0,0,0.10)] transition-all duration-200 ease-out hover:-translate-y-0.5 hover:border-[var(--color-primary-gold-hover)] hover:bg-[var(--color-primary-gold-hover)] hover:shadow-[0_6px_16px_rgba(0,0,0,0.14)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-primary-gold-hover)] disabled:cursor-not-allowed disabled:opacity-70 motion-reduce:transition-none motion-reduce:hover:translate-y-0"
               >
-                {submitLabel}
+                {isSubmitting ? 'שולח...' : submitLabel}
               </button>
+
+              {(status === 'success' || status === 'error') && (
+                <p
+                  role="status"
+                  aria-live="polite"
+                  className="border-r-2 border-[var(--color-primary-gold)] pr-4 text-base font-medium leading-relaxed text-[var(--color-text-primary)]"
+                >
+                  {status === 'success'
+                    ? 'הפרטים נשלחו בהצלחה! אחזור אליכם בהקדם.'
+                    : 'אירעה שגיאה בשליחת הטופס. נסו שוב או פנו אליי בוואטסאפ.'}
+                </p>
+              )}
             </form>
           </div>
         </div>
