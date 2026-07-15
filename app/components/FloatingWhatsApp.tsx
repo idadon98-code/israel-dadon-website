@@ -24,7 +24,7 @@ function WhatsappIcon() {
       strokeWidth={1.5}
       strokeLinecap="round"
       strokeLinejoin="round"
-      className="h-6 w-6 shrink-0"
+      className="block h-[26px] w-[26px] shrink-0 object-contain"
       aria-hidden="true"
     >
       <path d="M12 3.5a8.5 8.5 0 0 0-7.3 12.8L3.5 20.5l4.3-1.2A8.5 8.5 0 1 0 12 3.5Z" />
