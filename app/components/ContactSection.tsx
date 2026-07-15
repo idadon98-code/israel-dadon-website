@@ -43,7 +43,7 @@ const eventTypeOptions = [
  * surface, gold focus ring, comfortable padding.
  */
 const fieldClasses =
-  'w-full rounded-md border border-[var(--color-border)] bg-[var(--color-card)] px-4 py-3 text-base text-[var(--color-text-primary)] placeholder:text-[var(--color-text-secondary)]/70 transition-colors duration-200 ease-out focus:border-[var(--color-primary-gold)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-gold)]/30';
+  'block w-full max-w-full min-w-0 box-border rounded-md border border-[var(--color-border)] bg-[var(--color-card)] px-4 py-3 text-base text-[var(--color-text-primary)] placeholder:text-[var(--color-text-secondary)]/70 transition-colors duration-200 ease-out focus:border-[var(--color-primary-gold)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-gold)]/30';
 
 /**
  * ContactSection — "בואו נדבר" section.
@@ -135,9 +135,9 @@ export default function ContactSection({
           <ScrollReveal
             variant="fade-up"
             delayMs={100}
-            className="rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] p-6 shadow-[0_1px_10px_rgba(0,0,0,0.05)] sm:p-8"
+            className="w-full max-w-full overflow-x-hidden rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] p-6 shadow-[0_1px_10px_rgba(0,0,0,0.05)] sm:p-8"
           >
-            <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+            <form onSubmit={handleSubmit} className="flex w-full max-w-full flex-col gap-5">
               <input type="hidden" name="access_key" value={WEB3FORMS_ACCESS_KEY} />
               <input
                 type="hidden"
@@ -231,7 +231,9 @@ export default function ContactSection({
                   name="eventDate"
                   type="date"
                   min={todayIsoDate}
-                  className={fieldClasses}
+                  dir="ltr"
+                  className={`${fieldClasses} text-left`}
+                  style={{ width: '100%', maxWidth: '100%', boxSizing: 'border-box' }}
                 />
               </div>
 
